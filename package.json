@@ -1,0 +1,158 @@
+{
+    "name": "surge-lua",
+    "displayName": "Surge Lua",
+    "description": "Surge Engine Lua scripting: the engine API for the Lua language server, asset path and module completion, project-aware checks and snippets.",
+    "version": "0.1.0",
+    "publisher": "RidT",
+    "license": "MIT",
+    "icon": "Icon.png",
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "categories": [
+        "Programming Languages",
+        "Snippets",
+        "Linters"
+    ],
+    "keywords": [
+        "lua",
+        "surge",
+        "game engine"
+    ],
+    "extensionKind": [
+        "workspace"
+    ],
+    "extensionDependencies": [
+        "sumneko.lua"
+    ],
+    "extensionPack": [
+        "septag.visual-assist-dark"
+    ],
+    "activationEvents": [
+        "workspaceContains:**/AssetRegistry.surge",
+        "onLanguage:lua"
+    ],
+    "main": "./Extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "surge.newScript",
+                "title": "New Script...",
+                "category": "Surge"
+            },
+            {
+                "command": "surge.configureWorkspace",
+                "title": "Configure Lua Language Server for this Project",
+                "category": "Surge"
+            },
+            {
+                "command": "surge.openApi",
+                "title": "Open Lua API Definitions",
+                "category": "Surge"
+            },
+            {
+                "command": "surge.refreshAssets",
+                "title": "Refresh Asset Index",
+                "category": "Surge"
+            }
+        ],
+        "menus": {
+            "explorer/context": [
+                {
+                    "command": "surge.newScript",
+                    "when": "explorerResourceIsFolder && surge.isProject",
+                    "group": "navigation@9"
+                }
+            ],
+            "commandPalette": [
+                {
+                    "command": "surge.newScript",
+                    "when": "surge.isProject"
+                },
+                {
+                    "command": "surge.configureWorkspace",
+                    "when": "surge.isProject"
+                },
+                {
+                    "command": "surge.refreshAssets",
+                    "when": "surge.isProject"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "Surge",
+            "properties": {
+                "surge.lua.configureWorkspace": {
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "ask",
+                        "never"
+                    ],
+                    "enumDescriptions": [
+                        "Write the Lua language server settings (Surge API library, Lua 5.4, sandboxed standard library) into the workspace settings when a Surge project opens.",
+                        "Ask once per workspace before writing them.",
+                        "Never write them, run 'Surge: Configure Lua Language Server' by hand."
+                    ],
+                    "default": "always",
+                    "description": "Configure the Lua language server (sumneko.lua) for Surge projects."
+                },
+                "surge.lua.diagnostics": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Check asset paths, require() targets, physics layer names and callback names against the open Surge project."
+                }
+            }
+        },
+        "snippets": [
+            {
+                "language": "lua",
+                "path": "./Snippets/Surge.code-snippets"
+            }
+        ],
+        "languages": [
+            {
+                "id": "json",
+                "extensions": [
+                    ".srg",
+                    ".sui",
+                    ".spfx",
+                    ".surgeproj"
+                ]
+            }
+        ],
+        "configurationDefaults": {
+            "editor.semanticTokenColorCustomizations": {
+                "[Visual Assist Dark Theme]": {
+                    "rules": {
+                        "class:lua": "#FFD700",
+                        "type:lua": "#FFD700",
+                        "struct:lua": "#FFD700",
+                        "typeParameter:lua": "#FFD700",
+                        "namespace:lua": "#FFD700",
+                        "variable.defaultLibrary:lua": "#FFD700",
+                        "function:lua": "#FF8000",
+                        "method:lua": "#FF8000",
+                        "variable:lua": "#BDB76B",
+                        "parameter:lua": "#BDB76B",
+                        "property:lua": "#BDB76B",
+                        "variable.definition:lua": "#569CD6",
+                        "variable.readonly:lua": "#B8D7A3",
+                        "enumMember:lua": "#B8D7A3",
+                        "event:lua": "#B8D7A3",
+                        "macro:lua": "#BD63C5",
+                        "keyword.documentation:lua": "#808080",
+                        "string.deprecated:lua": "#FF3333",
+                        "*.deprecated:lua": {
+                            "strikethrough": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "scripts": {
+        "build": "node Scripts/Build.js",
+        "install-local": "node Scripts/Build.js --install"
+    }
+}

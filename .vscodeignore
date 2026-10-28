@@ -1,0 +1,7 @@
+.vscode/**
+.git/**
+.gitignore
+Scripts/**
+Build.bat
+*.vsix
+node_modules/**

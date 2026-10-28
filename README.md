@@ -1,4 +1,4 @@
-# Surge Lua
+# SurgeLuaExt
 
 VS Code support for Surge Engine Lua scripts. It sits on top of the Lua language server
 ([sumneko.lua](https://marketplace.visualstudio.com/items?itemName=sumneko.lua), installed with it) and adds what only the
@@ -7,7 +7,18 @@ engine and the open project know.
 ## Requirements
 
 - VS Code 1.85 or newer.
-- The Lua extension by sumneko (`sumneko.lua`). VS Code installs it together with this one.
+- The Lua extension by sumneko (`sumneko.lua`). VS Code installs it together with this one if you dont have it installed.
+- The [Visual Assist Dark Theme](https://marketplace.visualstudio.com/items?itemName=septag.visual-assist-dark) is installed
+  with it too (optional: it can be uninstalled on its own). Select it with *Preferences: Color Theme > Visual Assist Dark Theme* to get the
+  [Visual Assist colors](#visual-assist-colors) for Lua.
+
+## How To Install
+
+Clone this repository and run `Build.bat --install`: it packs `surge-lua-<version>.vsix` in the repository root and installs it
+into VS Code. Only VS Code is needed (no Node or npm). With the Surge engine repo next to this one (`../Surge_Expired`), the build
+first syncs the latest `SurgeAPI.lua` from it.
+
+To install a `.vsix` by hand: Command Palette (Ctrl+Shift+P) > **Extensions: Install from VSIX...** >pick the file.
 
 ## Features
 
@@ -23,6 +34,7 @@ engine and the open project know.
 | Commands | New Script (3 templates), Configure Lua Language Server, Open Lua API Definitions, Refresh Asset Index |
 | Live project index | Follows the Editor: the registry, scenes, UI layouts and project settings reload when they change |
 | File types | `.srg`, `.sui`, `.spfx` and `.surgeproj` open as JSON |
+| Visual Assist colors | Lua colored like Visual Assist colors C++, with the Visual Assist Dark Theme |
 
 ### Project detection
 
@@ -50,7 +62,7 @@ The language server is set to Lua 5.4 and to the libraries `ScriptEngine::Initia
 `table`, `utf8`, `coroutine` and `package`.
 
 - `io` and `debug` are reported as undefined globals.
-- `os` only has `clock`, `date`, `difftime` and `time` (`library/Sandbox.lua`). `os.execute`, `os.exit`, `os.getenv`,
+- `os` only has `clock`, `date`, `difftime` and `time` (`Library/Sandbox.lua`). `os.execute`, `os.exit`, `os.getenv`,
   `os.remove`, `os.rename`, `os.tmpname` and `os.setlocale` are reported as unknown fields.
 - `dofile` and `loadfile` get a warning: exported games read assets from the APK and have no file system. Use `require` for
   scripts and `Storage` for save data.
@@ -189,6 +201,33 @@ extension.
 `.srg` (scenes), `.sui` (UI layouts), `.spfx` (particle effects) and `.surgeproj` (project) open with JSON highlighting,
 folding and formatting.
 
+### Visual Assist colors
+
+The [Visual Assist Dark Theme](https://marketplace.visualstudio.com/items?itemName=septag.visual-assist-dark) colors C++ like
+Visual Assist does in Visual Studio, but it only knows a few Lua scopes: fields show in plain white and engine globals like
+`Scene` look like any variable. With that theme active, the extension recolors Lua from the language server's semantic tokens
+in the same palette:
+
+| Color | Lua |
+| --- | --- |
+| Gold `#FFD700` | Engine and standard library globals (`Scene`, `Math`, `Key`, `Property`, `math`, `string`...), classes and annotation types (`---@param entity Entity`) |
+| Orange `#FF8000` | Functions and methods: calls, definitions, engine functions (`Scene.Load`, `entity.MeshC:SetMesh`, `print`) |
+| Khaki `#BDB76B` | Variables: locals, parameters, your own globals and fields (`entity.TransformC.Position`) |
+| Blue `#569CD6` | `self` (like `this`) |
+| Green `#B8D7A3` | `<const>` locals |
+| Gray `#808080` | Annotation tags (`@param`, `@return`) |
+| Strikethrough | `---@deprecated` API |
+
+Keywords, strings, numbers, comments and operators keep the theme's own colors. Only Lua is affected (every rule ends in
+`:lua`), and only while the Visual Assist Dark Theme is the active theme. Your own `editor.semanticTokenColorCustomizations` win
+over these defaults, so any color can be changed there:
+
+```json
+"editor.semanticTokenColorCustomizations": {
+    "[Visual Assist Dark Theme]": { "rules": { "property:lua": "#DCDCDC" } }
+}
+```
+
 ## Settings
 
 | Setting | Default | |
@@ -198,19 +237,23 @@ folding and formatting.
 
 ## Build and install
 
-`Build.bat --install` (or `node scripts/build.js --install`): copies the engine's `SurgeAPI.lua` and logo into the
+`Build.bat --install` (or `node Scripts/Build.js --install`): copies the engine's `SurgeAPI.lua` and logo into the
 extension, packs `surge-lua-<version>.vsix` (no npm packages needed, falls back to VS Code's own Node runtime) and installs it.
 Without `--install`, install the `.vsix` with *Extensions: Install from VSIX...*.
 
 The engine repo is found through `--engine <path>`, else the `SURGE_ENGINE_DIR` environment variable, else `../Surge_Expired`
-next to this repo. Without one, the build packs the `library/SurgeAPI.lua` committed here, so commit it after a sync.
+next to this repo. Without one, the build packs the `Library/SurgeAPI.lua` committed here, so commit it after a sync.
 
-Development: open this folder in VS Code and press F5 (Extension Development Host). It uses `library/SurgeAPI.lua` as it is,
+Development: open this folder in VS Code and press F5 (Extension Development Host). It uses `Library/SurgeAPI.lua` as it is,
 run the build once to sync it with the engine.
 
 When the engine's Lua API changes, update its `SurgeAPI.lua` as usual, then rebuild here and commit the synced copy. A new
-binding that takes an asset path, script, entity, widget or layer name also needs a line in the `RULES` table of `src/LuaCalls.js`.
+binding that takes an asset path, script, entity, widget or layer name also needs a line in the `RULES` table of `Source/LuaCalls.js`.
 
 ## License
 
 [MIT](LICENSE.txt) © 2026 RidT
+
+## AI SLOP NOTE
+
+This is a AI slop generated by Claude with no human checks on the .js code, I (Rid) do not know sh*t about how JavaScript works(and do not want to know it either). This makes the scripting experience in the Lua of SurgeEngine a lot nicer, so I will allow this Slop(#SlopForGood).
